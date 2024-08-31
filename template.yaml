@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >
+  Stack for lmd-sample-python Lambda Function'.
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10  # Default value: 3 seconds
+    Handler: index.handler
+    Architectures:
+      - x86_64
+
+Parameters:
+  LambdaFunctionName1:
+    Type: String
+    Default: lmd-jwt-authorizer-function
+    Description: The name of the Lambda function.
+  LambdaFunctionName2:
+    Type: String
+    Default: lmd-sample-function
+    Description: The name of the Lambda function.
+
+Resources:
+  AwsLambdaFunction1:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: !Ref LambdaFunctionName1
+      CodeUri: functions/lmd-jwt-authorizer-function/
+      Handler: index.handler
+      Runtime: python3.12
+      Description: >
+        lmd-jwt-authorizer Lambda Function'.
+      MemorySize: 128
+      Role: arn:aws:iam::xxxx:role/duck's role
+      Layers:
+        - !Ref AwsLambdaLayer1
+  AwsLambdaFunction2:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: !Ref LambdaFunctionName2
+      CodeUri: functions/lmd-sample-function/
+      Handler: index.handler
+      Runtime: python3.12
+      Description: >
+        lmd-sample-function Lambda Function'.
+      MemorySize: 128
+      Role: arn:aws:iam::xxxx:role/duck's role
+      Layers:
+        - !Ref AwsLambdaLayer2
+#   Node 패키지 Layer
+  AwsLambdaLayer1:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: AwsLambdaLayer1
+      Description: Dependencies for lmd-jwt-authorizer-layer Lambda Function'.
+      CompatibleArchitectures:
+        - x86_64
+      CompatibleRuntimes:
+        - python3.11
+      ContentUri: layers/lmd-jwt-authorizer-layer/
+      RetentionPolicy: 'Delete'
+    Metadata:
+      BuildMethod: makefile
+  AwsLambdaLayer2:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: AwsLambdaLayer2
+      Description: Dependencies for lmd-sample-python Lambda Function'.
+      CompatibleArchitectures:
+        - x86_64
+      CompatibleRuntimes:
+        - python3.11
+      ContentUri: layers/lmd-sample-layer/
+      RetentionPolicy: 'Delete'
+    Metadata:
+      BuildMethod: makefile
+#Outputs:
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
